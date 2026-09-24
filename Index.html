@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Narrative Radar — Weekly Rotation Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0B0E14;
+    --surface: #12161F;
+    --surface-2: #171C27;
+    --line: #262B38;
+    --amber: #E8A33D;
+    --teal: #4FB0A8;
+    --ink: #ECE7DA;
+    --muted: #7A8093;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'IBM Plex Mono', monospace;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 40px 24px 64px; }
+
+  header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--line); padding-bottom: 18px; margin-bottom: 34px; flex-wrap: wrap; gap: 8px; }
+  .brand { font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.35rem; letter-spacing: 0.01em; }
+  .brand span { color: var(--amber); }
+  .meta { font-size: 0.72rem; color: var(--muted); text-align: right; line-height: 1.5; }
+
+  .hero { display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: center; padding: 28px; background: var(--surface); border: 1px solid var(--line); border-radius: 4px; margin-bottom: 40px; }
+  .hero .num { font-family: 'Fraunces', serif; font-weight: 600; font-size: 4.4rem; color: var(--amber); line-height: 1; font-variant-numeric: tabular-nums; }
+  .hero .num small { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--muted); font-weight: 400; margin-top: 6px; }
+  .hero h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.5rem; margin: 0 0 8px; line-height: 1.25; }
+  .hero p { margin: 0; font-size: 0.82rem; color: var(--muted); line-height: 1.55; }
+
+  h2.section-title { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 14px; font-weight: 500; }
+
+  .board { border: 1px solid var(--line); border-radius: 4px; overflow: hidden; margin-bottom: 40px; }
+  details { border-bottom: 1px solid var(--line); background: var(--surface); }
+  details:last-child { border-bottom: none; }
+  summary { list-style: none; cursor: pointer; padding: 16px 18px; display: grid; grid-template-columns: 1fr 110px 74px; align-items: center; gap: 14px; }
+  summary::-webkit-details-marker { display: none; }
+  summary:hover { background: var(--surface-2); }
+  .name { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1rem; color: var(--ink); }
+  .bar-track { height: 6px; background: var(--surface-2); border-radius: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--amber); }
+  .bar-fill.cool { background: var(--teal); }
+  .score { font-size: 0.78rem; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+  .detail { padding: 0 18px 18px; font-size: 0.8rem; color: var(--muted); line-height: 1.6; }
+  .tag { display: inline-block; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 20px; border: 1px solid var(--line); margin-bottom: 10px; }
+  .tag.in { color: var(--amber); border-color: var(--amber); }
+  .tag.out { color: var(--teal); border-color: var(--teal); }
+  .tag.hold { color: var(--muted); }
+
+  .signal { background: var(--surface); border: 1px solid var(--amber); border-left: 4px solid var(--amber); border-radius: 4px; padding: 22px; margin-bottom: 40px; }
+  .signal p { margin: 0; font-size: 0.86rem; line-height: 1.65; color: var(--ink); }
+  .signal p + p { margin-top: 10px; color: var(--muted); font-size: 0.78rem; }
+
+  .case { border: 1px solid var(--line); border-radius: 4px; padding: 22px; margin-bottom: 40px; }
+  .case ol { margin: 0; padding-left: 20px; font-size: 0.8rem; color: var(--muted); line-height: 1.9; }
+  .case li strong { color: var(--ink); font-weight: 500; }
+
+  footer { font-size: 0.68rem; color: var(--muted); line-height: 1.6; border-top: 1px solid var(--line); padding-top: 18px; }
+
+  .pulse { border: 1px solid var(--line); border-radius: 4px; margin-bottom: 40px; overflow: hidden; }
+  .pulse-head { display: flex; justify-content: space-between; align-items: baseline; padding: 14px 18px; background: var(--surface); border-bottom: 1px solid var(--line); }
+  .pulse-head a { color: var(--amber); text-decoration: none; font-size: 0.7rem; }
+  .pulse-item { padding: 14px 18px; border-bottom: 1px solid var(--line); background: var(--surface); }
+  .pulse-item:last-child { border-bottom: none; }
+  .pulse-item .date { font-size: 0.68rem; color: var(--amber); display: block; margin-bottom: 4px; }
+  .pulse-item .headline { font-family: 'Fraunces', serif; font-weight: 600; font-size: 0.92rem; color: var(--ink); margin: 0 0 4px; }
+  .pulse-item .note { font-size: 0.78rem; color: var(--muted); line-height: 1.55; margin: 0; }
+  .pulse-note { padding: 12px 18px; font-size: 0.68rem; color: var(--muted); background: var(--surface-2); }
+
+  .chat { border: 1px solid var(--line); border-radius: 4px; margin-bottom: 40px; overflow: hidden; }
+  .chat-head { padding: 14px 18px; background: var(--surface); border-bottom: 1px solid var(--line); }
+  .chat-log { max-height: 340px; overflow-y: auto; padding: 18px; background: var(--surface); display: flex; flex-direction: column; gap: 14px; }
+  .msg { font-size: 0.82rem; line-height: 1.6; max-width: 92%; }
+  .msg.user { align-self: flex-end; color: var(--bg); background: var(--amber); padding: 10px 13px; border-radius: 4px; }
+  .msg.agent { align-self: flex-start; color: var(--ink); background: var(--surface-2); padding: 10px 13px; border-radius: 4px; border-left: 2px solid var(--amber); }
+  .msg.empty-hint { color: var(--muted); font-style: normal; }
+  .chat-form { display: flex; border-top: 1px solid var(--line); }
+  .chat-form input { flex: 1; background: var(--surface); border: none; color: var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; padding: 14px 16px; outline: none; }
+  .chat-form input::placeholder { color: var(--muted); }
+  .chat-form button { background: var(--amber); color: var(--bg); border: none; padding: 0 22px; font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; font-weight: 600; cursor: pointer; }
+  .chat-form button:disabled { opacity: 0.5; cursor: default; }
+  .chat-hint { padding: 10px 18px; font-size: 0.68rem; color: var(--muted); background: var(--surface-2); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">Narrative <span>Radar</span></div>
+    <div class="meta">Weekly rotation read<br>Snapshot: week of Sep 22, 2026</div>
+  </header>
+
+  <div class="hero">
+    <div class="num">88<small>MOMENTUM /100</small></div>
+    <div>
+      <h1>DePIN is this week's fastest-moving narrative</h1>
+      <p>Its sector index is up sharply over the past month and leads every other tracked narrative on token performance — while RWA and DeFi post the bigger adoption and revenue numbers. Different scoreboards, different leaders. This board doesn't predict what happens next — it's here to make me research the gap and argue with my own read before I size anything.</p>
+    </div>
+  </div>
+
+  <div class="signal" style="border-color: var(--line); border-left-color: var(--teal);">
+    <p style="font-size:0.78rem;"><strong style="color:var(--teal);">How the momentum score works —</strong> an illustrative composite of two inputs: recent token-performance vs. the rest of the tracked set, and an adoption/revenue signal (TVL, holder counts, fee revenue) where available. It's normalized 0–100 across the six narratives here so they're comparable at a glance. I don't have a precise formula or fixed weights to show — this is a directional read built by hand and refreshed when I re-check the sources below, not a live or automated index. Treat it as "which way," not "by how much."</p>
+  </div>
+
+  <h2 class="section-title">Six narratives, ranked by momentum</h2>
+  <div class="board">
+
+    <details open>
+      <summary>
+        <span class="name">DePIN</span>
+        <span class="bar-track"><span class="bar-fill" style="width:88%"></span></span>
+        <span class="score">88</span>
+      </summary>
+      <div class="detail">
+        <span class="tag in">Rotating in</span><br>
+        Decentralized physical infrastructure — compute, wireless, energy. Leads 2026 on raw token performance as networks shift from token-subsidized growth toward real enterprise revenue. The one to watch for continuation.
+        <div style="margin-top:8px;font-size:0.68rem;color:var(--muted);">Sources: sector index performance — CoinGecko / CMC DePIN category pages · protocol revenue — Token Terminal</div>
+      </div>
+    </details>
+
+    <details>
+      <summary>
+        <span class="name">RWA</span>
+        <span class="bar-track"><span class="bar-fill" style="width:74%"></span></span>
+        <span class="score">74</span>
+      </summary>
+      <div class="detail">
+        <span class="tag hold">Holding</span><br>
+        Real-world asset tokenization. Institutional-adoption story in the space — tokenized asset value and holder counts have both been climbing through 2026. Token prices are flat even as usage keeps climbing, so this is a slow-burn accumulation narrative, not a momentum trade.
+        <div style="margin-top:8px;font-size:0.68rem;color:var(--muted);">Sources: TVL and category ranking — DefiLlama RWA dashboard · holder/adoption counts — rwa.xyz</div>
+      </div>
+    </details>
+
+    <details>
+      <summary>
+        <span class="name">AI x Crypto</span>
+        <span class="bar-track"><span class="bar-fill" style="width:61%"></span></span>
+        <span class="score">61</span>
+      </summary>
+      <div class="detail">
+        <span class="tag in">Rotating in (early)</span><br>
+        Agentic payments, verifiable AI infrastructure, compute marketplaces. Growing selectively rather than broadly, and increasingly overlaps with DePIN — hard to isolate as its own trade right now.
+        <div style="margin-top:8px;font-size:0.68rem;color:var(--muted);">Sources: sector classification and funding flow — CoinGecko AI category, crypto VC deal trackers (e.g. Galaxy Research)</div>
+      </div>
+    </details>
+
+    <details>
+      <summary>
+        <span class="name">DeFi</span>
+        <span class="bar-track"><span class="bar-fill" style="width:55%"></span></span>
+        <span class="score">55</span>
+      </summary>
+      <div class="detail">
+        <span class="tag hold">Holding</span><br>
+        Still processes the most capital of any sector, with real recurring fee revenue at protocols like Aave and Hyperliquid. But sector token prices have lagged TVL growth, so the money's working, the tokens aren't paying.
+        <div style="margin-top:8px;font-size:0.68rem;color:var(--muted);">Sources: TVL — DefiLlama · protocol fee/revenue — Token Terminal</div>
+      </div>
+    </details>
+
+    <details>
+      <summary>
+        <span class="name">Restaking</span>
+        <span class="bar-track"><span class="bar-fill" style="width:48%"></span></span>
+        <span class="score">48</span>
+      </summary>
+      <div class="detail">
+        <span class="tag hold">Neutral</span><br>
+        Shared-security demand tracks new AVS launches. No clean sector index to lean on yet, and slashing risk keeps a lid on conviction — a narrative to monitor rather than size up into.
+        <div style="margin-top:8px;font-size:0.68rem;color:var(--muted);">Sources: restaked TVL — DefiLlama (EigenLayer and comparable protocols) · AVS launch tracking — project docs/announcements, checked manually</div>
+      </div>
+    </details>
+
+    <details>
+      <summary>
+        <span class="name">ReFi</span>
+        <span class="bar-track"><span class="bar-fill cool" style="width:12%"></span></span>
+        <span class="score">12</span>
+      </summary>
+      <div class="detail">
+        <span class="tag out">Rotating out</span><br>
+        Regenerative finance. Smallest and weakest tracked narrative by category size and trading volume. Illiquid enough that entries and exits both carry real slippage risk.
+        <div style="margin-top:8px;font-size:0.68rem;color:var(--muted);">Sources: category market cap and volume — CoinGecko ReFi category page</div>
+      </div>
+    </details>
+
+  </div>
+
+  <div class="signal">
+    <p>This week's read: capital is leaving narratives that only have liquidity (DeFi) or only have speculation (small-cap AI tokens) and moving toward narratives with provable usage underneath the price — DePIN's enterprise revenue, RWA's institutional volume. That gap between "adoption leader" and "momentum leader" is usually where the next rotation starts.</p>
+    <p>Momentum scores are an illustrative composite (token performance + adoption signal), not a precise index — built to compare direction, not to trade off decimal points.</p>
+  </div>
+
+  <div class="case">
+    <h2 class="section-title">How the desk actually uses this</h2>
+    <ol>
+      <li><strong>Step 1 — A trigger hits.</strong> A macro print, a Binance announcement, or a sudden move in one sector — any of these can kick off the process.</li>
+      <li><strong>Step 2 — Cross-check, don't react.</strong> Pull up the narrative board before touching a position. Which rows are backed by adoption/revenue vs. only by price? Ask the desk chat to argue against the obvious read.</li>
+      <li><strong>Step 3 — Flag, don't assume.</strong> Flagged DePIN for further research rather than chasing the first bounce — the board says usage is real, but a board isn't a fill price.</li>
+      <li><strong>Takeaway</strong> — AI doesn't call the trade. It's the colleague that makes you defend the thesis before you size it.</li>
+    </ol>
+  </div>
+
+  <h2 class="section-title">Desk pulse — Binance Announcements (reference examples)</h2>
+  <div class="pulse">
+    <div class="pulse-head">
+      <span>Historical examples of exchange-side signals worth reading against the board — not this week's news</span>
+      <a href="https://www.binance.com/en/support/announcement" target="_blank" rel="noopener">Check live feed →</a>
+    </div>
+    <div class="pulse-item">
+      <span class="date">2026-07-07</span>
+      <p class="headline">Binance adds 10 tokenized-equity (bStocks) pairs to Spot</p>
+      <p class="note">Coinbase, Alphabet, Qualcomm and other bStocks went live for spot and algo-bot trading — a direct read on how fast the RWA narrative is moving from "tokenized bonds" into "tokenized public equity." Worth weighing against the RWA row above.</p>
+    </div>
+    <div class="pulse-item">
+      <span class="date">2026-07-10</span>
+      <p class="headline">Binance Margin &amp; Loan delists TST and IOTX</p>
+      <p class="note">Routine housekeeping, but a reminder that margin exposure on thin narratives (this desk's ReFi row, for instance) carries forced-unwind risk the spot market doesn't.</p>
+    </div>
+    <div class="pulse-item">
+      <span class="date">2026-07-06</span>
+      <p class="headline">Moonriver network upgrade — deposits/withdrawals paused</p>
+      <p class="note">A scheduled halt, not a risk event — but any desk running automated rotation needs these on a calendar, since a paused network can strand a rebalance mid-trade.</p>
+    </div>
+    <div class="pulse-note">These are historical examples from Binance's official Announcements channel (dated, July 2026) used to illustrate how the desk reads exchange-side signals — they are not current news. Use the live feed link above for what's actually happening this week.</div>
+  </div>
+
+  <h2 class="section-title">Ask the desk</h2>
+  <div class="chat">
+    <div class="chat-head">Ask about any narrative on the board, the rotation call, or how a Binance announcement above connects to it.</div>
+    <div class="chat-log" id="chatLog">
+      <div class="msg agent empty-hint">Ask something like "why is DePIN leading" or "does the bStocks listing change the RWA read?"</div>
+    </div>
+    <form class="chat-form" id="chatForm">
+      <input id="chatInput" type="text" placeholder="Type a question…" autocomplete="off" />
+      <button type="submit" id="chatSend">Ask</button>
+    </form>
+    <div class="chat-hint" id="chatHint">Connecting…</div>
+  </div>
+
+  <footer>
+    Built by a one-person desk using AI to synthesize public market narrative data. Not an offer or solicitation to trade any financial product. Momentum scores are illustrative and directional, not investment advice. Do your own research.
+  </footer>
+
+</div>
+<script>
+(function () {
+  const DESK_CONTEXT = `
+You are the research analyst for a one-person crypto trading desk called "Narrative Radar."
+Answer questions using ONLY the data below, plus general market reasoning. Be concise (2-5 sentences),
+concrete, and speak like a trader briefing a colleague — no hedging filler, no "as an AI" disclaimers.
+Never give direct buy/sell instructions or price targets; frame things as reads/signals, not advice.
+
+NARRATIVE MOMENTUM BOARD (illustrative composite score /100, this week):
+- DePIN: 88 — Rotating in. Leads 2026 token performance (+25.89% YTD, +30.58% 1-month sector index). Shift from token-subsidized growth to real enterprise revenue.
+- RWA: 74 — Holding. ~$38.8B tokenized asset value, 3.3M+ holders. Institutional adoption leader; token prices flat despite rising usage.
+- AI x Crypto: 61 — Rotating in early. Agentic payments, verifiable AI infra, compute marketplaces. Selective growth, overlaps DePIN.
+- DeFi: 55 — Holding. ~$88B TVL, real recurring fee revenue (Aave, Hyperliquid). Sector token prices slightly negative.
+- Restaking: 48 — Neutral. Demand tracks new AVS launches. Slashing risk caps conviction.
+- ReFi: 12 — Rotating out. ~$64M category size, <$1M daily volume. Illiquid, still contracting.
+
+THIS WEEK'S ROTATION CALL: capital is leaving pure-liquidity plays (DeFi) and speculative-only AI tokens,
+moving toward narratives with provable usage underneath price (DePIN's enterprise revenue, RWA's institutional volume).
+
+RECENT BINANCE ANNOUNCEMENTS (desk pulse):
+- 2026-07-07: Binance added 10 tokenized-equity (bStocks) pairs to Spot (Coinbase, Alphabet, Qualcomm, etc.) — RWA narrative extending into tokenized public equity.
+- 2026-07-10: Binance Margin & Loan delisted TST and IOTX — routine housekeeping, but a reminder that margin exposure on thin narratives (e.g. ReFi) carries forced-unwind risk.
+- 2026-07-06: Moonriver network upgrade paused deposits/withdrawals — scheduled halt, relevant for anyone running automated rotation.
+`.trim();
+
+  const log = document.getElementById('chatLog');
+  const form = document.getElementById('chatForm');
+  const input = document.getElementById('chatInput');
+  const send = document.getElementById('chatSend');
+  const hint = document.getElementById('chatHint');
+  let sample = null;
+  let hasChatted = false;
+  const history = [];
+
+  function addMsg(role, text) {
+    if (!hasChatted) { log.innerHTML = ''; hasChatted = true; }
+    const div = document.createElement('div');
+    div.className = 'msg ' + (role === 'user' ? 'user' : 'agent');
+    div.textContent = text;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+    return div;
+  }
+
+  async function init() {
+    try {
+      if (typeof claude !== 'undefined' && claude.use) {
+        sample = await claude.use('sample');
+      }
+    } catch (e) {
+      sample = null;
+    }
+    if (!sample) {
+      form.style.display = 'none';
+      hint.innerHTML = 'Live chat only runs inside the interactive claude.ai version of this page — <a href="https://claude.ai/artifact/AkAMUBkYr61akWCSmiEx6w" target="_blank" rel="noopener" style="color:var(--amber);">open it here to ask questions →</a>';
+      log.innerHTML = '<div class="msg agent empty-hint">This static copy can\'t run live chat. Use the link below to ask the desk questions.</div>';
+    } else {
+      hint.textContent = 'Answers ground themselves in the board above, not live prices.';
+    }
+  }
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const q = input.value.trim();
+    if (!q || !sample) return;
+    addMsg('user', q);
+    input.value = '';
+    send.disabled = true;
+    const agentDiv = addMsg('agent', 'Thinking…');
+    history.push({ role: 'user', content: q });
+
+    try {
+      const messages = [
+        { role: 'user', content: DESK_CONTEXT + '\n\nQuestion: ' + q }
+      ];
+      const result = await sample(messages, {
+        onText: ({ text }) => { agentDiv.textContent = text; log.scrollTop = log.scrollHeight; },
+        modelTier: 'default',
+        cache: false
+      });
+      agentDiv.textContent = result.text;
+      history.push({ role: 'assistant', content: result.text });
+    } catch (err) {
+      agentDiv.textContent = 'Could not get an answer (' + (err && err.code ? err.code : 'error') + '). Try again.';
+    } finally {
+      send.disabled = false;
+      input.focus();
+    }
+  });
+
+  init();
+})();
+</script>
+</body>
+</html>
